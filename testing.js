@@ -8,7 +8,7 @@ const tokens = [
         lineNo: null
     },
     {
-        token: "if",
+        token: "IF",
         value: /IF|if/,
         index: null,
         lineNo: null
@@ -16,6 +16,12 @@ const tokens = [
     {
         token: "END",
         value: /END|end/,
+        index: null,
+        lineNo: null
+    },
+    {
+        token: "PRINT",
+        value: /PRINT|print/,
         index: null,
         lineNo: null
     },
@@ -51,7 +57,13 @@ const tokens = [
     },
     {
         token: "RELOP",
-        value: />|>=|<|<=|!=|[=][=]/,
+        value: />|>=|<|<=|!=|==/,
+        index: null,
+        lineNo: null
+    },
+    {
+        token: "LOGICAL",
+        value: /&&|\|\||!/,
         index: null,
         lineNo: null
     },
@@ -80,12 +92,6 @@ const tokens = [
         lineNo: null
     },
     {
-        token: "LOGICAL",
-        value: /&&|\|\||!/,
-        index: null,
-        lineNo: null
-    },
-    {
         token: "OTHER",
         value: /.\+/,
         index: null,
@@ -105,24 +111,31 @@ var obj = {
     index: null
 }
 var index = 0, line = 1;
-while(i < data.length){
-    if (data.charAt(i) != " " && data.charAt(i) != "\n") {
-        c += data.charAt(i);
-    }else {
-        let x = tokens.find(token => c.match(token.value));
-        if(x){
-            x.index = index;
-            x.value = c;
-            x.lineNo = line;
-            if (data.charAt(i) == "\n") {
-                index = 0;
-                line++;
-            } else {
-                index =  i+1;
-            }
-            console.log(x);
-            c = "";
+const getToken = (current, j) =>{
+    let x = tokens.find(token => current.match(token.value));
+    if(x){
+        x.index = index;
+        x.value = c;
+        x.lineNo = line;
+        if (data.charAt(j) == "\n") {
+            index = 0;
+            line ++;
+        } else {
+            index =  j + 1;
         }
+        console.log(x);
+        c = "";
+    }
+}
+while(i < data.length){
+    let currentChar = data.charAt(i);
+    if (currentChar == " " || currentChar == "\n") {
+        getToken(c, i);
+    }else if (currentChar == "," || currentChar == "(" || currentChar == ")" || currentChar == ";") {
+        getToken(c, i);
+        getToken(currentChar, i);
+    }else {
+        c += currentChar;
     }
     i++;
 }
