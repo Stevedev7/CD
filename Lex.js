@@ -11,8 +11,26 @@ class Lex {
                 lineNo: null
             },
             {
+                token: "MAIN",
+                value: /MAIN|main/,
+                index: null,
+                lineNo: null
+            },
+            {
+                token: "IF",
+                value: /IF|if/,
+                index: null,
+                lineNo: null
+            },
+            {
                 token: "END",
                 value: /END|end/,
+                index: null,
+                lineNo: null
+            },
+            {
+                token: "PRINT",
+                value: /PRINT|print/,
                 index: null,
                 lineNo: null
             },
@@ -36,7 +54,7 @@ class Lex {
             },
             {
                 token: "ASSIGNMENT",
-                value: /\+=|-=|\*=|\/=|=/,
+                value: /\+=|-=|\*=|\/=/,
                 index: null,
                 lineNo: null
             },
@@ -48,7 +66,13 @@ class Lex {
             },
             {
                 token: "RELOP",
-                value: /==|>|>=|<|<=|!=/,
+                value: />|>=|<|<=|!=|==/,
+                index: null,
+                lineNo: null
+            },
+            {
+                token: "LOGICAL",
+                value: /&&|\|\||!/,
                 index: null,
                 lineNo: null
             },
@@ -77,8 +101,20 @@ class Lex {
                 lineNo: null
             },
             {
+                token: "OPENPARANTHESIS",
+                value: /\(/,
+                index: null,
+                lineNo: null
+            },
+            {
+                token: "CLOSEDPARANTHESIS",
+                value: /\)/,
+                index: null,
+                lineNo: null
+            },
+            {
                 token: "OTHER",
-                value: /.+/,
+                value: /.\+/,
                 index: null,
                 lineNo: null
             }
@@ -91,28 +127,48 @@ class Lex {
         var data = this.getContent();
         var tokenisedData = [];
         let current = "";
-        var line = 0;
-        var index = -1;
-        for(var i = 0; i < data.length; i++){
-            for (var j = i; j < data.length; j++) {
-                if(data.charAt(i) != " "){
-                    current += data.charAt(j);
-                } else if (data.charAt(j) == "\n") {
-                    index = 0;
-                    line++;
-                    break;
-                }else {
-                    while(data.charAt(j) == " ") {
-                        j++;
-                    }
-                    let newObj = this.tokens.find(token => current.match(token.value));
-                    newObj.index = index;
-                    newObj.lineNo = line;
-                    tokenisedData.push(newObj);
-                    i = j;
+        var i = 0;
+        var line = 1;
+        var index = 0;
+        const getToken = (currentString, j) =>{
+            if (currentString == "(" || currentString == ")") {
+                let x = {
+                    token: currentString == "(" ? "OPENPARANTHESIS" : "CLOSEDPARANTHESIS",
+                    value: currentString,
+                    index: index,
+                    lineNo: line
+                };
+                tokenisedData.push(x);
+                console.log(x);
+            } else {
+                let x = this.tokens.find(token => currentString.match(token.value));
+                if (x) {
+                    x.index = index;
+                    x.value = currentString;
+                    x.lineNo = line;
+                    tokenisedData.push(x);
+                    console.log(x);
                 }
-
             }
+        }
+        while(i < data.length){
+            let currentChar = data.charAt(i);
+            if (currentChar == " " || currentChar == "\n") {
+                getToken(current, i);
+                index =  i + 1;
+                if (currentChar == "\n") {
+                    index = 0;
+                    line ++;
+                }
+                current = "";
+            }else if (currentChar == "," || currentChar == "(" || currentChar == ")" || currentChar == ";") {
+                getToken(current, i);
+                current = "";
+                getToken(currentChar, i);
+            }else {
+                current += currentChar;
+            }
+            i++;
         }
         return tokenisedData;
     }

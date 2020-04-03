@@ -97,18 +97,18 @@ const tokens = [
         index: null,
         lineNo: null
     },
-    // {
-    //     token: "OPENPARANTHESIS",
-    //     value: /\(/,
-    //     index: null,
-    //     lineNo: null
-    // },
-    // {
-    //     token: "CLOSEDPARANTHESIS",
-    //     value: /\)/,
-    //     index: null,
-    //     lineNo: null
-    // },
+    {
+        token: "OPENPARANTHESIS",
+        value: /\(/,
+        index: null,
+        lineNo: null
+    },
+    {
+        token: "CLOSEDPARANTHESIS",
+        value: /\)/,
+        index: null,
+        lineNo: null
+    },
     {
         token: "OTHER",
         value: /.\+/,
@@ -130,32 +130,37 @@ var obj = {
 }
 var index = 0, line = 1;
 const getToken = (current, j) =>{
-    let x = tokens.find(token => current.match(token.value));
     if (current == "(" || current == ")") {
+        let x = {
+            token: current == "(" ? "OPENPARANTHESIS" : "CLOSEDPARANTHESIS",
+            value: current,
+            index: index,
+            lineNo: line
+        };
         console.log(x);
-    }
-    if(x){
-        x.index = index;
-        x.value = current;
-        x.lineNo = line;
-        if (data.charAt(j) == "\n") {
-            index = 0;
-            line ++;
-        } else {
-            index =  j + 1;
+    } else {
+        let x = tokens.find(token => current.match(token.value));
+        if (x) {
+            x.index = index;
+            x.value = current;
+            x.lineNo = line;
+            console.log(x);
         }
-        console.log(x);
     }
 }
 while(i < data.length){
     let currentChar = data.charAt(i);
     if (currentChar == " " || currentChar == "\n") {
         getToken(c, i);
+        index =  i + 1;
+        if (currentChar == "\n") {
+            index = 0;
+            line ++;
+        }
         c = "";
     }else if (currentChar == "," || currentChar == "(" || currentChar == ")" || currentChar == ";") {
         getToken(c, i);
         c = "";
-        console.log(currentChar);
         getToken(currentChar, i);
     }else {
         c += currentChar;
