@@ -129,7 +129,7 @@ var obj = {
     index: null
 }
 var index = 0, line = 1;
-const getToken = (current, j) =>{
+const getToken = (current) =>{
     if (current == "(" || current == ")") {
         let x = {
             token: current == "(" ? "OPENPARANTHESIS" : "CLOSEDPARANTHESIS",
@@ -148,10 +148,10 @@ const getToken = (current, j) =>{
         }
     }
 }
-while(i < data.length){
+for (var i = 0; i < data.length; i++) {
     let currentChar = data.charAt(i);
     if (currentChar == " " || currentChar == "\n") {
-        getToken(c, i);
+        getToken(c);
         index =  i + 1;
         if (currentChar == "\n") {
             index = 0;
@@ -159,11 +159,14 @@ while(i < data.length){
         }
         c = "";
     }else if (currentChar == "," || currentChar == "(" || currentChar == ")" || currentChar == ";") {
-        getToken(c, i);
-        c = "";
-        getToken(currentChar, i);
+        if (c.length != 0) {
+            getToken(c);
+            index++;
+            c = "";
+        }
+        getToken(currentChar);
+        index++;
     }else {
         c += currentChar;
     }
-    i++;
 }
