@@ -118,55 +118,139 @@ const tokens = [
 ];
 
 var data = fs.readFileSync("test.md", "utf8");
+//
+// var c = "";
+// var tk = [];
+//
+//
+// var index = 0, line = 1;
+// const getToken = (current) =>{
+//     if (current == "(" || current == ")") {
+//         let x = {
+//             token: current == "(" ? "OPENPARANTHESIS" : "CLOSEDPARANTHESIS",
+//             value: current,
+//             index: index,
+//             lineNo: line
+//         };
+//         console.log(x);
+//     } else {
+//         let x = tokens.find(token => current.match(token.value));
+//         if (x) {
+//             x.index = index;
+//             x.value = current;
+//             x.lineNo = line;
+//             console.log(x);
+//         }
+//     }
+// }
+// for (var i = 0; i < data.length; i++) {
+//     let currentChar = data.charAt(i);
+//     if (currentChar == " " || currentChar == "\n") {
+//         getToken(c);
+//         index =  i + 1;
+//         if (currentChar == "\n") {
+//             index = 0;
+//             line ++;
+//         }
+//         c = "";
+//     }else if (currentChar == "," || currentChar == "(" || currentChar == ")" || currentChar == ";") {
+//         if (c.length != 0) {
+//             getToken(c);
+//             index++;
+//             c = "";
+//         }
+//         getToken(currentChar);
+//         index++;
+//     }else {
+//         c += currentChar;
+//     }
+// }
 
-var i = 0;
-var c = "";
-var tk = [];
+var charString = "",
+    ind = 0,
+    lin = 1;
 
-var obj = {
-    token: null,
-    value: null,
-    index: null
-}
-var index = 0, line = 1;
-const getToken = (current) =>{
+// const makeObj = (val) => {console.log(`Obj made, ${val}`);}
+
+const makeObj = (current) =>{
     if (current == "(" || current == ")") {
         let x = {
             token: current == "(" ? "OPENPARANTHESIS" : "CLOSEDPARANTHESIS",
             value: current,
-            index: index,
-            lineNo: line
+            index: ind,
+            lineNo: lin
         };
         console.log(x);
+        // tk.push(x);
     } else {
         let x = tokens.find(token => current.match(token.value));
         if (x) {
-            x.index = index;
+            x.index = ind;
             x.value = current;
-            x.lineNo = line;
+            x.lineNo = lin;
             console.log(x);
+            // tk.push(x);
         }
     }
+    return true;
 }
+
+const whiteSpace = (j) => {
+    while(data.charAt(j) != " " && j < data.length){
+        j++;
+    }
+    return --j;
+}
+
 for (var i = 0; i < data.length; i++) {
-    let currentChar = data.charAt(i);
-    if (currentChar == " " || currentChar == "\n") {
-        getToken(c);
-        index =  i + 1;
-        if (currentChar == "\n") {
-            index = 0;
-            line ++;
+    let cur = data.charAt(i);
+    if (cur == " ") {
+        if(charString.length != 0){
+            makeObj(charString);
+            charString = "";
+            ind += charString.length;
         }
-        c = "";
-    }else if (currentChar == "," || currentChar == "(" || currentChar == ")" || currentChar == ";") {
-        if (c.length != 0) {
-            getToken(c);
-            index++;
-            c = "";
+        makeObj(cur);
+        ind += charString.length;
+    }else if (cur == "\n") {
+        if (charString.length != 0) {
+            makeObj(charString);
+            ind++;
+            charString = "";
         }
-        getToken(currentChar);
-        index++;
-    }else {
-        c += currentChar;
+        makeObj(cur);
+        lin++;
+        ind = 0;
+    } else if (cur == ",") {
+        if (charString.length != 0) {
+            console.log("charsring " + charString);
+
+            if (makeObj(charString)) {
+                console.log("made");
+            }
+            console.log(cur);
+            charString = "";
+            ind++;
+        }
+        makeObj(cur);
+        ind++;
+    } else if (cur == "(" || cur == ")") {
+        if (charString.length != 0) {
+            makeObj(charString);
+            ind++;
+            charString = "";
+        }
+        makeObj(cur);
+    }else if (cur == ";") {
+        if (charString.length != 0) {
+            makeObj(charString);
+            ind++;
+            charString = "";
+        }
+        makeObj(cur);
+    } else {
+        charString += cur;
     }
 }
+
+// console.log(tk);
