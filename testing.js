@@ -223,12 +223,7 @@ for (var i = 0; i < data.length; i++) {
         ind = 0;
     } else if (cur == ",") {
         if (charString.length != 0) {
-            console.log("charsring " + charString);
-
-            if (makeObj(charString)) {
-                console.log("made");
-            }
-            console.log(cur);
+            makeObj(charString);
             charString = "";
             ind++;
         }
